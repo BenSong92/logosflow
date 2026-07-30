@@ -8,6 +8,7 @@ import { EmptyChapterState } from "@/components/reader/empty-chapter-state";
 import { TRANSLATIONS_BY_CODE } from "@/lib/data/translations";
 import { useChapterVerses } from "@/lib/bible/hooks";
 import { useReaderStore } from "@/lib/store/reader-store";
+import { useIsMobile } from "@/lib/hooks/use-is-mobile";
 
 export function ReaderPanel() {
   const bookId = useReaderStore((s) => s.currentBookId);
@@ -20,6 +21,7 @@ export function ReaderPanel() {
     chapter,
     activeTranslations
   );
+  const isMobile = useIsMobile();
 
   const verseNumbers = useMemo(
     () => Object.keys(chapterVerses ?? {}).map(Number).sort((a, b) => a - b),
@@ -48,26 +50,28 @@ export function ReaderPanel() {
 
   return (
     <ScrollArea className="h-full scroll-thin">
-      <div className="mx-auto max-w-5xl px-6 py-6">
-        <div
-          className="sticky top-0 z-10 -mx-6 mb-3 grid gap-4 border-b border-border bg-paper/95 px-6 py-2 backdrop-blur"
-          style={gridStyle}
-        >
-          <div />
-          {activeTranslations.map((code) => {
-            const t = TRANSLATIONS_BY_CODE[code];
-            return (
-              <div key={code} className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                {t?.nameKo}
-                {t?.attribution && (
-                  <span className="ml-1 font-normal normal-case text-ink-muted/70">
-                    {t.attribution}
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
+      <div className="mx-auto max-w-5xl px-3 py-4 sm:px-6 sm:py-6">
+        {!isMobile && (
+          <div
+            className="sticky top-0 z-10 -mx-6 mb-3 grid gap-4 border-b border-border bg-paper/95 px-6 py-2 backdrop-blur"
+            style={gridStyle}
+          >
+            <div />
+            {activeTranslations.map((code) => {
+              const t = TRANSLATIONS_BY_CODE[code];
+              return (
+                <div key={code} className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                  {t?.nameKo}
+                  {t?.attribution && (
+                    <span className="ml-1 font-normal normal-case text-ink-muted/70">
+                      {t.attribution}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
         <div className="flex flex-col gap-0.5 pb-16">
           {verseNumbers.map((num) => (
             <VerseRow

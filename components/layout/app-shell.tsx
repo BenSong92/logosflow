@@ -11,13 +11,18 @@ import { ResearchDrawer } from "@/components/study/research-drawer";
 import { CommandPalette } from "@/components/search/command-palette";
 import { Button } from "@/components/ui/button";
 import { useReaderStore } from "@/lib/store/reader-store";
+import { useIsMobile } from "@/lib/hooks/use-is-mobile";
+import { cn } from "@/lib/utils";
 
 export function AppShell() {
   const focusMode = useReaderStore((s) => s.focusMode);
   const setFocusMode = useReaderStore((s) => s.setFocusMode);
   const leftPanelOpen = useReaderStore((s) => s.leftPanelOpen);
   const rightPanelOpen = useReaderStore((s) => s.rightPanelOpen);
+  const toggleLeftPanel = useReaderStore((s) => s.toggleLeftPanel);
+  const toggleRightPanel = useReaderStore((s) => s.toggleRightPanel);
   const setCommandPaletteOpen = useReaderStore((s) => s.setCommandPaletteOpen);
+  const isMobile = useIsMobile();
   const nextChapter = useReaderStore((s) => s.nextChapter);
   const prevChapter = useReaderStore((s) => s.prevChapter);
   const selectedVerseNumber = useReaderStore((s) => s.selectedVerseNumber);
@@ -86,25 +91,38 @@ export function AppShell() {
       <CommandPalette />
       {!focusMode && <Header />}
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 overflow-hidden">
+        {isMobile && !focusMode && (leftPanelOpen || rightPanelOpen) && (
+          <div
+            className="fixed inset-0 z-30 bg-black/40"
+            onClick={() => {
+              if (leftPanelOpen) toggleLeftPanel();
+              if (rightPanelOpen) toggleRightPanel();
+            }}
+          />
+        )}
+
         <AnimatePresence initial={false}>
           {!focusMode && leftPanelOpen && (
             <motion.aside
               key="sidebar"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 240, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
+              initial={isMobile ? { x: -288, opacity: 1 } : { width: 0, opacity: 0 }}
+              animate={isMobile ? { x: 0, opacity: 1 } : { width: 240, opacity: 1 }}
+              exit={isMobile ? { x: -288, opacity: 1 } : { width: 0, opacity: 0 }}
               transition={{ duration: 0.18 }}
-              className="overflow-hidden border-r border-border"
+              className={cn(
+                "overflow-hidden border-r border-border bg-paper",
+                isMobile ? "fixed inset-y-0 left-0 z-40 w-72 max-w-[80vw]" : ""
+              )}
             >
-              <div className="h-full w-60">
+              <div className={cn("h-full", isMobile ? "w-72 max-w-[80vw]" : "w-60")}>
                 <SidebarNav />
               </div>
             </motion.aside>
           )}
         </AnimatePresence>
 
-        <main className="min-w-0 flex-1">
+        <main className="min-w-0 flex-1 overflow-hidden">
           <ReaderPanel />
         </main>
 
@@ -112,13 +130,16 @@ export function AppShell() {
           {!focusMode && rightPanelOpen && (
             <motion.aside
               key="drawer"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 320, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
+              initial={isMobile ? { x: 320, opacity: 1 } : { width: 0, opacity: 0 }}
+              animate={isMobile ? { x: 0, opacity: 1 } : { width: 320, opacity: 1 }}
+              exit={isMobile ? { x: 320, opacity: 1 } : { width: 0, opacity: 0 }}
               transition={{ duration: 0.18 }}
-              className="overflow-hidden border-l border-border"
+              className={cn(
+                "overflow-hidden border-l border-border bg-paper",
+                isMobile ? "fixed inset-y-0 right-0 z-40 w-80 max-w-[85vw]" : ""
+              )}
             >
-              <div className="h-full w-80">
+              <div className={cn("h-full", isMobile ? "w-80 max-w-[85vw]" : "w-80")}>
                 <ResearchDrawer />
               </div>
             </motion.aside>

@@ -130,3 +130,12 @@ body {
   background-color: var(--color-border);
   border-radius: 9999px;
 }
+
+/* for the header's mobile overflow strip — never clip a control, just let it scroll */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

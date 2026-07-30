@@ -9,6 +9,7 @@ import { BOOKS_BY_ID } from "@/lib/data/books";
 import { TRANSLATIONS_BY_CODE } from "@/lib/data/translations";
 import { useReaderStore } from "@/lib/store/reader-store";
 import { useStudyStore } from "@/lib/store/study-store";
+import { useIsMobile } from "@/lib/hooks/use-is-mobile";
 import { cn } from "@/lib/utils";
 import type { HighlightColor, TranslationCode } from "@/types/bible";
 
@@ -40,6 +41,7 @@ export function VerseRow({ bookId, chapter, verseNumber, texts, translations, gr
   const lineHeight = useReaderStore((s) => s.lineHeight);
   const scriptureFont = useReaderStore((s) => s.scriptureFont);
   const highlight = useStudyStore((s) => s.highlights.find((h) => h.verseKey === vKey));
+  const isMobile = useIsMobile();
 
   const isSelected = selectedVerseNumber === verseNumber;
   const { data: crossRefs } = useCrossReferences(bookId, chapter, verseNumber);
@@ -54,6 +56,62 @@ export function VerseRow({ bookId, chapter, verseNumber, texts, translations, gr
     if (!rightPanelOpen) toggleRightPanel();
   };
 
+  const verseNumBadge = (
+    <span className="flex select-none items-center gap-1 text-xs font-semibold text-ink-muted">
+      {crossRefCount > 0 && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              onClick={(e) => e.stopPropagation()}
+              className="h-1.5 w-1.5 rounded-full bg-crossref"
+            />
+          </TooltipTrigger>
+          <TooltipContent className="max-w-56">
+            관주 {crossRefCount}건 — {crossRefPreview}
+            {crossRefCount > 3 && ` 외 ${crossRefCount - 3}건`}
+          </TooltipContent>
+        </Tooltip>
+      )}
+      {verseNumber}
+    </span>
+  );
+
+  if (isMobile) {
+    return (
+      <div
+        onClick={handleSelect}
+        className={cn(
+          "cursor-pointer rounded-lg px-2 py-2 transition-colors",
+          isSelected ? "ring-2 ring-accent/60" : "hover:bg-paper-raised",
+          highlight && HIGHLIGHT_BG[highlight.color]
+        )}
+      >
+        <div className="mb-1">{verseNumBadge}</div>
+        <div className="flex flex-col gap-2">
+          {translations.map((code) => (
+            <div key={code}>
+              {translations.length > 1 && (
+                <span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wide text-ink-muted/70">
+                  {TRANSLATIONS_BY_CODE[code]?.nameKo ?? code}
+                </span>
+              )}
+              <VerseTranslationCell
+                bookId={bookId}
+                chapter={chapter}
+                verseNumber={verseNumber}
+                code={code}
+                text={texts[code]}
+                fontSize={fontSize}
+                lineHeight={lineHeight}
+                scriptureFont={scriptureFont}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       onClick={handleSelect}
@@ -64,23 +122,7 @@ export function VerseRow({ bookId, chapter, verseNumber, texts, translations, gr
       )}
       style={gridStyle}
     >
-      <div className="flex select-none items-start justify-end gap-1 pt-1 text-xs font-semibold text-ink-muted">
-        {crossRefCount > 0 && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span
-                onClick={(e) => e.stopPropagation()}
-                className="mt-0.5 h-1.5 w-1.5 rounded-full bg-crossref"
-              />
-            </TooltipTrigger>
-            <TooltipContent className="max-w-56">
-              관주 {crossRefCount}건 — {crossRefPreview}
-              {crossRefCount > 3 && ` 외 ${crossRefCount - 3}건`}
-            </TooltipContent>
-          </Tooltip>
-        )}
-        {verseNumber}
-      </div>
+      <div className="flex items-start justify-end pt-1">{verseNumBadge}</div>
       {translations.map((code) => (
         <VerseTranslationCell
           key={code}

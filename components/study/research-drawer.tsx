@@ -8,6 +8,7 @@ import { verseKey } from "@/lib/data/verses";
 import { useReaderStore } from "@/lib/store/reader-store";
 import { WordStudyTab } from "@/components/study/word-study-tab";
 import { CrossRefTab } from "@/components/study/cross-ref-tab";
+import { FiguresTab } from "@/components/study/figures-tab";
 import { NotesTab } from "@/components/study/notes-tab";
 import { AITab } from "@/components/study/ai-tab";
 
@@ -24,7 +25,7 @@ export function ResearchDrawer() {
         <p className="text-xs text-ink-muted">
           구절을 클릭하면
           <br />
-          원어·관주·노트·AI 해설을 볼 수 있어요
+          원어·관주·인물·노트·AI 해설을 볼 수 있어요
         </p>
       </div>
     );
@@ -41,9 +42,10 @@ export function ResearchDrawer() {
         </p>
       </div>
       <Tabs defaultValue="word" className="flex flex-1 flex-col overflow-hidden px-4 pt-3">
-        <TabsList className="w-full">
+        <TabsList className="no-scrollbar w-full overflow-x-auto">
           <TabsTrigger value="word" className="flex-1">원어</TabsTrigger>
           <TabsTrigger value="crossref" className="flex-1">관주</TabsTrigger>
+          <TabsTrigger value="figures" className="flex-1">인물</TabsTrigger>
           <TabsTrigger value="notes" className="flex-1">노트</TabsTrigger>
           <TabsTrigger value="ai" className="flex-1">AI</TabsTrigger>
         </TabsList>
@@ -53,6 +55,9 @@ export function ResearchDrawer() {
           </TabsContent>
           <TabsContent value="crossref" className="pb-6 pr-2">
             <CrossRefTab bookId={bookId} chapter={chapter} verse={selectedVerseNumber} />
+          </TabsContent>
+          <TabsContent value="figures" className="pb-6 pr-2">
+            <FiguresTab bookId={bookId} chapter={chapter} verse={selectedVerseNumber} />
           </TabsContent>
           <TabsContent value="notes" className="pb-6 pr-2">
             <NotesTab verseKey={vKey} />

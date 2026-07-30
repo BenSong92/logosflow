@@ -2,10 +2,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { BIBLE_BOOKS, BOOKS_BY_ID } from "@/lib/data/books";
 import { DEFAULT_ACTIVE_TRANSLATIONS } from "@/lib/data/translations";
+import { CHRONOLOGICAL_BOOK_ORDER, CHRONOLOGICAL_INDEX } from "@/lib/data/chronological";
 import type { TranslationCode } from "@/types/bible";
 
 export type ThemeMode = "light" | "dark" | "system";
 export type ScriptureFont = "serif" | "sans";
+export type ReadingOrder = "canonical" | "chronological";
 
 interface ReaderState {
   theme: ThemeMode;
@@ -16,6 +18,7 @@ interface ReaderState {
   leftPanelOpen: boolean;
   rightPanelOpen: boolean;
   activeTranslations: TranslationCode[];
+  readingOrder: ReadingOrder;
   currentBookId: string;
   currentChapter: number;
   selectedVerseNumber: number | null;
@@ -33,6 +36,7 @@ interface ReaderState {
   toggleLeftPanel: () => void;
   toggleRightPanel: () => void;
   toggleTranslation: (code: TranslationCode) => void;
+  setReadingOrder: (order: ReadingOrder) => void;
   navigateTo: (bookId: string, chapter: number) => void;
   nextChapter: () => void;
   prevChapter: () => void;
@@ -61,6 +65,7 @@ export const useReaderStore = create<ReaderState>()(
       leftPanelOpen: true,
       rightPanelOpen: true,
       activeTranslations: DEFAULT_ACTIVE_TRANSLATIONS,
+      readingOrder: "canonical",
       currentBookId: "GEN",
       currentChapter: 1,
       selectedVerseNumber: null,
@@ -87,30 +92,37 @@ export const useReaderStore = create<ReaderState>()(
           }
           return { activeTranslations: [...s.activeTranslations, code] };
         }),
+      setReadingOrder: (readingOrder) => set({ readingOrder }),
       navigateTo: (bookId, chapter) =>
         set({ currentBookId: bookId, currentChapter: chapter, selectedVerseNumber: null }),
       nextChapter: () => {
-        const { currentBookId, currentChapter } = get();
+        const { currentBookId, currentChapter, readingOrder } = get();
         const book = BOOKS_BY_ID[currentBookId];
         if (!book) return;
         if (currentChapter < book.chapterCount) {
           set({ currentChapter: currentChapter + 1, selectedVerseNumber: null });
           return;
         }
-        const nextBook = BIBLE_BOOKS.find((b) => b.order === book.order + 1);
+        const nextBook =
+          readingOrder === "chronological"
+            ? BOOKS_BY_ID[CHRONOLOGICAL_BOOK_ORDER[CHRONOLOGICAL_INDEX[currentBookId] + 1]]
+            : BIBLE_BOOKS.find((b) => b.order === book.order + 1);
         if (nextBook) {
           set({ currentBookId: nextBook.id, currentChapter: 1, selectedVerseNumber: null });
         }
       },
       prevChapter: () => {
-        const { currentBookId, currentChapter } = get();
+        const { currentBookId, currentChapter, readingOrder } = get();
         const book = BOOKS_BY_ID[currentBookId];
         if (!book) return;
         if (currentChapter > 1) {
           set({ currentChapter: currentChapter - 1, selectedVerseNumber: null });
           return;
         }
-        const prevBook = BIBLE_BOOKS.find((b) => b.order === book.order - 1);
+        const prevBook =
+          readingOrder === "chronological"
+            ? BOOKS_BY_ID[CHRONOLOGICAL_BOOK_ORDER[CHRONOLOGICAL_INDEX[currentBookId] - 1]]
+            : BIBLE_BOOKS.find((b) => b.order === book.order - 1);
         if (prevBook) {
           set({
             currentBookId: prevBook.id,
@@ -133,6 +145,7 @@ export const useReaderStore = create<ReaderState>()(
         leftPanelOpen: s.leftPanelOpen,
         rightPanelOpen: s.rightPanelOpen,
         activeTranslations: s.activeTranslations,
+        readingOrder: s.readingOrder,
         currentBookId: s.currentBookId,
         currentChapter: s.currentChapter,
       }),
