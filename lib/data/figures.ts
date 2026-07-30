@@ -400,10 +400,10 @@ export const BIBLICAL_FIGURES: BiblicalFigure[] = [
     id: "peter",
     nameKo: "베드로",
     nameEn: "Peter",
-    aliases: ["시몬"],
     testament: "NT",
     role: "12사도의 대표",
-    description: "본래 어부였던 시몬으로, 예수에게 '베드로'(반석)라는 이름을 받았다. 초대교회의 지도적 사도.",
+    description:
+      "본래 어부였던 시몬으로, 예수에게 '베드로'(반석)라는 이름을 받았다. 초대교회의 지도적 사도. ('시몬'이라는 이름만으로는 구레네 시몬, 바리새인 시몬 등 신약의 다른 인물과 구분이 안 되어 검색 대상에서 제외함)",
   },
   {
     id: "andrew",
@@ -419,7 +419,8 @@ export const BIBLICAL_FIGURES: BiblicalFigure[] = [
     nameEn: "James (son of Zebedee)",
     testament: "NT",
     role: "12사도",
-    description: "요한의 형제로, 베드로·요한과 함께 예수의 핵심 세 제자 중 하나였다. 사도 중 최초의 순교자.",
+    description:
+      "요한의 형제로, 베드로·요한과 함께 예수의 핵심 세 제자 중 하나였다. 사도 중 최초의 순교자. (신약에는 이 외에도 '알패오의 아들 야고보', 예수의 동생이자 야고보서 저자인 '야고보' 등 동명이인이 여러 명 있어 문맥 확인이 필요하다)",
   },
   {
     id: "john_apostle",
@@ -518,6 +519,14 @@ export const BIBLICAL_FIGURES: BiblicalFigure[] = [
     testament: "NT",
     role: "최초의 순교자",
     description: "초대교회 일곱 집사 중 한 명으로, 돌에 맞아 죽은 기독교 최초의 순교자.",
+  },
+  {
+    id: "joseph_arimathea",
+    nameKo: "아리마대 요셉",
+    nameEn: "Joseph of Arimathea",
+    testament: "NT",
+    role: "공회원",
+    description: "부유한 공회원으로, 예수의 시신을 요청해 자신의 새 무덤에 장사지냈다.",
   },
   {
     id: "pilate",

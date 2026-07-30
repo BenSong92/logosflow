@@ -43,9 +43,11 @@ export function VerseRow({ bookId, chapter, verseNumber, texts, translations, gr
   const lineHeight = useReaderStore((s) => s.lineHeight);
   const scriptureFont = useReaderStore((s) => s.scriptureFont);
   const highlight = useStudyStore((s) => s.highlights.find((h) => h.verseKey === vKey));
+  const hoveredFigureName = useReaderStore((s) => s.hoveredFigureName);
   const isMobile = useIsMobile();
 
   const isSelected = selectedVerseNumber === verseNumber;
+  const figureHighlightTerm = isSelected ? hoveredFigureName : null;
   const { data: crossRefs } = useCrossReferences(bookId, chapter, verseNumber);
   const crossRefCount = crossRefs?.length ?? 0;
   const crossRefPreview = (crossRefs ?? [])
@@ -110,6 +112,7 @@ export function VerseRow({ bookId, chapter, verseNumber, texts, translations, gr
                 fontSize={fontSize}
                 lineHeight={lineHeight}
                 scriptureFont={scriptureFont}
+                highlightTerm={figureHighlightTerm}
               />
             </div>
           ))}
@@ -140,6 +143,7 @@ export function VerseRow({ bookId, chapter, verseNumber, texts, translations, gr
           fontSize={fontSize}
           lineHeight={lineHeight}
           scriptureFont={scriptureFont}
+          highlightTerm={figureHighlightTerm}
         />
       ))}
     </div>
@@ -155,6 +159,7 @@ function VerseTranslationCell({
   fontSize,
   lineHeight,
   scriptureFont,
+  highlightTerm,
 }: {
   bookId: string;
   chapter: number;
@@ -164,6 +169,7 @@ function VerseTranslationCell({
   fontSize: number;
   lineHeight: number;
   scriptureFont: string;
+  highlightTerm?: string | null;
 }) {
   const { data: links } = useWordLinks(bookId, chapter, verseNumber, code);
 
@@ -177,7 +183,7 @@ function VerseTranslationCell({
       }}
     >
       {text ? (
-        <StrongLinkedText text={text} links={links ?? []} />
+        <StrongLinkedText text={text} links={links ?? []} highlightTerm={highlightTerm} />
       ) : (
         <span className="text-ink-muted/60">
           {TRANSLATIONS_BY_CODE[code]?.licenseStatus === "pending-license"

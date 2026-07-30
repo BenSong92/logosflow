@@ -20,6 +20,8 @@ interface ReaderState {
   /** Mobile-only panel state — deliberately not persisted, so phones always start with both closed
    * regardless of what leftPanelOpen/rightPanelOpen were left at on desktop. Only one open at a time. */
   mobileOpenPanel: "left" | "right" | null;
+  /** The figure name currently pinned/hovered in the 인물 tab — highlighted wherever it appears in the reader. Not persisted. */
+  hoveredFigureName: string | null;
   activeTranslations: TranslationCode[];
   readingOrder: ReadingOrder;
   currentBookId: string;
@@ -39,6 +41,7 @@ interface ReaderState {
   toggleLeftPanel: () => void;
   toggleRightPanel: () => void;
   setMobileOpenPanel: (panel: "left" | "right" | null) => void;
+  setHoveredFigureName: (name: string | null) => void;
   toggleTranslation: (code: TranslationCode) => void;
   setReadingOrder: (order: ReadingOrder) => void;
   navigateTo: (bookId: string, chapter: number) => void;
@@ -69,6 +72,7 @@ export const useReaderStore = create<ReaderState>()(
       leftPanelOpen: true,
       rightPanelOpen: true,
       mobileOpenPanel: null,
+      hoveredFigureName: null,
       activeTranslations: DEFAULT_ACTIVE_TRANSLATIONS,
       readingOrder: "canonical",
       currentBookId: "GEN",
@@ -86,6 +90,7 @@ export const useReaderStore = create<ReaderState>()(
       toggleLeftPanel: () => set((s) => ({ leftPanelOpen: !s.leftPanelOpen })),
       toggleRightPanel: () => set((s) => ({ rightPanelOpen: !s.rightPanelOpen })),
       setMobileOpenPanel: (panel) => set({ mobileOpenPanel: panel }),
+      setHoveredFigureName: (name) => set({ hoveredFigureName: name }),
       toggleTranslation: (code) =>
         set((s) => {
           const has = s.activeTranslations.includes(code);
@@ -100,13 +105,18 @@ export const useReaderStore = create<ReaderState>()(
         }),
       setReadingOrder: (readingOrder) => set({ readingOrder }),
       navigateTo: (bookId, chapter) =>
-        set({ currentBookId: bookId, currentChapter: chapter, selectedVerseNumber: null }),
+        set({
+          currentBookId: bookId,
+          currentChapter: chapter,
+          selectedVerseNumber: null,
+          hoveredFigureName: null,
+        }),
       nextChapter: () => {
         const { currentBookId, currentChapter, readingOrder } = get();
         const book = BOOKS_BY_ID[currentBookId];
         if (!book) return;
         if (currentChapter < book.chapterCount) {
-          set({ currentChapter: currentChapter + 1, selectedVerseNumber: null });
+          set({ currentChapter: currentChapter + 1, selectedVerseNumber: null, hoveredFigureName: null });
           return;
         }
         const nextBook =
@@ -114,7 +124,12 @@ export const useReaderStore = create<ReaderState>()(
             ? BOOKS_BY_ID[CHRONOLOGICAL_BOOK_ORDER[CHRONOLOGICAL_INDEX[currentBookId] + 1]]
             : BIBLE_BOOKS.find((b) => b.order === book.order + 1);
         if (nextBook) {
-          set({ currentBookId: nextBook.id, currentChapter: 1, selectedVerseNumber: null });
+          set({
+            currentBookId: nextBook.id,
+            currentChapter: 1,
+            selectedVerseNumber: null,
+            hoveredFigureName: null,
+          });
         }
       },
       prevChapter: () => {
@@ -122,7 +137,7 @@ export const useReaderStore = create<ReaderState>()(
         const book = BOOKS_BY_ID[currentBookId];
         if (!book) return;
         if (currentChapter > 1) {
-          set({ currentChapter: currentChapter - 1, selectedVerseNumber: null });
+          set({ currentChapter: currentChapter - 1, selectedVerseNumber: null, hoveredFigureName: null });
           return;
         }
         const prevBook =
@@ -134,10 +149,11 @@ export const useReaderStore = create<ReaderState>()(
             currentBookId: prevBook.id,
             currentChapter: prevBook.chapterCount,
             selectedVerseNumber: null,
+            hoveredFigureName: null,
           });
         }
       },
-      selectVerse: (n) => set({ selectedVerseNumber: n }),
+      selectVerse: (n) => set({ selectedVerseNumber: n, hoveredFigureName: null }),
       setCommandPaletteOpen: (v) => set({ commandPaletteOpen: v }),
       setCurrentChapterVerseNumbers: (verses) => set({ currentChapterVerseNumbers: verses }),
     }),

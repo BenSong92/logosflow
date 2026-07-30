@@ -59,8 +59,40 @@ function StrongWord({ term, strongNumbers }: { term: string; strongNumbers: stri
   );
 }
 
-export function StrongLinkedText({ text, links }: { text: string; links: WordLinkSpan[] }) {
-  if (links.length === 0) return <>{text}</>;
+/** Wraps every occurrence of `term` in `text` with a highlight mark. */
+function highlightOccurrences(text: string, term: string): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  let cursor = 0;
+  let idx = text.indexOf(term, cursor);
+  if (idx === -1) return text;
+  let key = 0;
+  while (idx !== -1) {
+    if (idx > cursor) parts.push(text.slice(cursor, idx));
+    parts.push(
+      <mark key={key++} className="rounded-sm bg-search-match text-inherit">
+        {term}
+      </mark>
+    );
+    cursor = idx + term.length;
+    idx = text.indexOf(term, cursor);
+  }
+  if (cursor < text.length) parts.push(text.slice(cursor));
+  return <>{parts}</>;
+}
+
+export function StrongLinkedText({
+  text,
+  links,
+  highlightTerm,
+}: {
+  text: string;
+  links: WordLinkSpan[];
+  /** A figure name to highlight wherever it appears (see FiguresTab) — only applied on the plain-text path since linked (KJV/English) text can't contain a Korean name anyway. */
+  highlightTerm?: string | null;
+}) {
+  if (links.length === 0) {
+    return <>{highlightTerm ? highlightOccurrences(text, highlightTerm) : text}</>;
+  }
 
   const nodes: React.ReactNode[] = [];
   let cursor = 0;
