@@ -17,6 +17,9 @@ interface ReaderState {
   focusMode: boolean;
   leftPanelOpen: boolean;
   rightPanelOpen: boolean;
+  /** Mobile-only panel state — deliberately not persisted, so phones always start with both closed
+   * regardless of what leftPanelOpen/rightPanelOpen were left at on desktop. Only one open at a time. */
+  mobileOpenPanel: "left" | "right" | null;
   activeTranslations: TranslationCode[];
   readingOrder: ReadingOrder;
   currentBookId: string;
@@ -35,6 +38,7 @@ interface ReaderState {
   setFocusMode: (v: boolean) => void;
   toggleLeftPanel: () => void;
   toggleRightPanel: () => void;
+  setMobileOpenPanel: (panel: "left" | "right" | null) => void;
   toggleTranslation: (code: TranslationCode) => void;
   setReadingOrder: (order: ReadingOrder) => void;
   navigateTo: (bookId: string, chapter: number) => void;
@@ -64,6 +68,7 @@ export const useReaderStore = create<ReaderState>()(
       focusMode: false,
       leftPanelOpen: true,
       rightPanelOpen: true,
+      mobileOpenPanel: null,
       activeTranslations: DEFAULT_ACTIVE_TRANSLATIONS,
       readingOrder: "canonical",
       currentBookId: "GEN",
@@ -80,6 +85,7 @@ export const useReaderStore = create<ReaderState>()(
       setFocusMode: (v) => set({ focusMode: v }),
       toggleLeftPanel: () => set((s) => ({ leftPanelOpen: !s.leftPanelOpen })),
       toggleRightPanel: () => set((s) => ({ rightPanelOpen: !s.rightPanelOpen })),
+      setMobileOpenPanel: (panel) => set({ mobileOpenPanel: panel }),
       toggleTranslation: (code) =>
         set((s) => {
           const has = s.activeTranslations.includes(code);

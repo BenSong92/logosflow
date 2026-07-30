@@ -19,10 +19,12 @@ export function AppShell() {
   const setFocusMode = useReaderStore((s) => s.setFocusMode);
   const leftPanelOpen = useReaderStore((s) => s.leftPanelOpen);
   const rightPanelOpen = useReaderStore((s) => s.rightPanelOpen);
-  const toggleLeftPanel = useReaderStore((s) => s.toggleLeftPanel);
-  const toggleRightPanel = useReaderStore((s) => s.toggleRightPanel);
+  const mobileOpenPanel = useReaderStore((s) => s.mobileOpenPanel);
+  const setMobileOpenPanel = useReaderStore((s) => s.setMobileOpenPanel);
   const setCommandPaletteOpen = useReaderStore((s) => s.setCommandPaletteOpen);
   const isMobile = useIsMobile();
+  const showLeft = isMobile ? mobileOpenPanel === "left" : leftPanelOpen;
+  const showRight = isMobile ? mobileOpenPanel === "right" : rightPanelOpen;
   const nextChapter = useReaderStore((s) => s.nextChapter);
   const prevChapter = useReaderStore((s) => s.prevChapter);
   const selectedVerseNumber = useReaderStore((s) => s.selectedVerseNumber);
@@ -92,18 +94,15 @@ export function AppShell() {
       {!focusMode && <Header />}
 
       <div className="relative flex flex-1 overflow-hidden">
-        {isMobile && !focusMode && (leftPanelOpen || rightPanelOpen) && (
+        {isMobile && !focusMode && mobileOpenPanel !== null && (
           <div
             className="fixed inset-0 z-30 bg-black/40"
-            onClick={() => {
-              if (leftPanelOpen) toggleLeftPanel();
-              if (rightPanelOpen) toggleRightPanel();
-            }}
+            onClick={() => setMobileOpenPanel(null)}
           />
         )}
 
         <AnimatePresence initial={false}>
-          {!focusMode && leftPanelOpen && (
+          {!focusMode && showLeft && (
             <motion.aside
               key="sidebar"
               initial={isMobile ? { x: -288, opacity: 1 } : { width: 0, opacity: 0 }}
@@ -127,7 +126,7 @@ export function AppShell() {
         </main>
 
         <AnimatePresence initial={false}>
-          {!focusMode && rightPanelOpen && (
+          {!focusMode && showRight && (
             <motion.aside
               key="drawer"
               initial={isMobile ? { x: 320, opacity: 1 } : { width: 0, opacity: 0 }}

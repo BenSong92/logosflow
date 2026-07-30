@@ -37,6 +37,8 @@ export function VerseRow({ bookId, chapter, verseNumber, texts, translations, gr
   const selectVerse = useReaderStore((s) => s.selectVerse);
   const rightPanelOpen = useReaderStore((s) => s.rightPanelOpen);
   const toggleRightPanel = useReaderStore((s) => s.toggleRightPanel);
+  const mobileOpenPanel = useReaderStore((s) => s.mobileOpenPanel);
+  const setMobileOpenPanel = useReaderStore((s) => s.setMobileOpenPanel);
   const fontSize = useReaderStore((s) => s.fontSize);
   const lineHeight = useReaderStore((s) => s.lineHeight);
   const scriptureFont = useReaderStore((s) => s.scriptureFont);
@@ -53,7 +55,11 @@ export function VerseRow({ bookId, chapter, verseNumber, texts, translations, gr
 
   const handleSelect = () => {
     selectVerse(isSelected ? null : verseNumber);
-    if (!rightPanelOpen) toggleRightPanel();
+    if (isMobile) {
+      if (mobileOpenPanel !== "right") setMobileOpenPanel("right");
+    } else if (!rightPanelOpen) {
+      toggleRightPanel();
+    }
   };
 
   const verseNumBadge = (

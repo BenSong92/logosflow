@@ -10,6 +10,7 @@ import { TranslationToggle } from "@/components/reader/translation-toggle";
 import { UserMenu } from "@/components/auth/user-menu";
 import { BOOKS_BY_ID } from "@/lib/data/books";
 import { useReaderStore } from "@/lib/store/reader-store";
+import { useIsMobile } from "@/lib/hooks/use-is-mobile";
 
 export function Header() {
   const currentBookId = useReaderStore((s) => s.currentBookId);
@@ -18,10 +19,29 @@ export function Header() {
   const prevChapter = useReaderStore((s) => s.prevChapter);
   const toggleLeftPanel = useReaderStore((s) => s.toggleLeftPanel);
   const toggleRightPanel = useReaderStore((s) => s.toggleRightPanel);
+  const mobileOpenPanel = useReaderStore((s) => s.mobileOpenPanel);
+  const setMobileOpenPanel = useReaderStore((s) => s.setMobileOpenPanel);
   const setFocusMode = useReaderStore((s) => s.setFocusMode);
   const setCommandPaletteOpen = useReaderStore((s) => s.setCommandPaletteOpen);
+  const isMobile = useIsMobile();
 
   const book = BOOKS_BY_ID[currentBookId];
+
+  function handleToggleLeft() {
+    if (isMobile) {
+      setMobileOpenPanel(mobileOpenPanel === "left" ? null : "left");
+    } else {
+      toggleLeftPanel();
+    }
+  }
+
+  function handleToggleRight() {
+    if (isMobile) {
+      setMobileOpenPanel(mobileOpenPanel === "right" ? null : "right");
+    } else {
+      toggleRightPanel();
+    }
+  }
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-1 border-b border-border bg-paper px-2 sm:gap-2 sm:px-3">
@@ -34,7 +54,7 @@ export function Header() {
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" onClick={toggleLeftPanel} aria-label="왼쪽 패널 토글">
+          <Button variant="ghost" size="icon" onClick={handleToggleLeft} aria-label="왼쪽 패널 토글">
             <PanelLeft className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
@@ -103,7 +123,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleRightPanel}
+              onClick={handleToggleRight}
               aria-label="오른쪽 패널 토글"
               className="shrink-0"
             >

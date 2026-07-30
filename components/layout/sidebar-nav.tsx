@@ -5,6 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import { BIBLE_BOOKS, BOOK_CATEGORIES, BOOKS_BY_ID } from "@/lib/data/books";
 import { CHRONOLOGICAL_ERAS } from "@/lib/data/chronological";
 import { useReaderStore } from "@/lib/store/reader-store";
+import { useIsMobile } from "@/lib/hooks/use-is-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import type { Testament } from "@/types/bible";
@@ -15,6 +16,8 @@ export function SidebarNav() {
   const navigateTo = useReaderStore((s) => s.navigateTo);
   const readingOrder = useReaderStore((s) => s.readingOrder);
   const setReadingOrder = useReaderStore((s) => s.setReadingOrder);
+  const setMobileOpenPanel = useReaderStore((s) => s.setMobileOpenPanel);
+  const isMobile = useIsMobile();
 
   const [testament, setTestament] = useState<Testament>(
     BOOKS_BY_ID[currentBookId]?.testament ?? "OT"
@@ -96,6 +99,7 @@ export function SidebarNav() {
                       onClick={() => {
                         navigateTo(pickerBook.id, ch);
                         setPickerBookId(null);
+                        if (isMobile) setMobileOpenPanel(null);
                       }}
                       className={cn(
                         "aspect-square rounded-md text-xs font-medium transition-colors",
