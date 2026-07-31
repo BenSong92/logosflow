@@ -13,15 +13,17 @@ permissions:
 jobs:
   translate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
 
-      - name: Install @google/genai
-        run: npm install @google/genai --no-save
+      - name: Install dependencies
+        run: npm ci
 
       - name: Translate today's quota worth of entries
         env:

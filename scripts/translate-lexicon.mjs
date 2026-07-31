@@ -108,7 +108,12 @@ async function translateBatch(client, batch, attempt = 1) {
     if (isDailyQuotaError(err)) {
       throw new DailyQuotaExceeded(String(err.message ?? err));
     }
-    if (attempt >= MAX_RETRIES) throw err;
+    // A bug in this script (bad request shape, SDK/runtime incompatibility, etc.) will fail
+    // identically on every retry and every batch — retrying just burns the whole job's time.
+    // Only network/API-level errors (ApiError from the SDK, or a plain Error we threw above
+    // for a bad response) are worth retrying.
+    const retryable = err instanceof Error && err.constructor.name !== "TypeError";
+    if (!retryable || attempt >= MAX_RETRIES) throw err;
     const backoff = Math.min(3000 * 2 ** (attempt - 1), 20000);
     console.warn(
       `  batch retry ${attempt}/${MAX_RETRIES} after ${backoff}ms: ${String(err).slice(0, 150)}`
