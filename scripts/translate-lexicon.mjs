@@ -34,7 +34,12 @@ function loadApiKey() {
 }
 
 const MODEL = "gemini-3.6-flash";
-const BATCH_SIZE = 100;
+// The real daily bottleneck is Gemini's free-tier requests-per-day cap, not this
+// number — observed so far: exactly 1 request succeeds per day before quota exhausts.
+// So a bigger batch means more entries per that one daily request. Raised from 100
+// in steps (not maxed out blindly) since an oversized batch risks a truncated/
+// malformed response, which burns the day's one request for zero progress.
+const BATCH_SIZE = 300;
 const MAX_RETRIES = 4;
 const DELAY_BETWEEN_BATCHES_MS = 3000;
 
