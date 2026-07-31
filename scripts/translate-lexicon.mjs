@@ -22,10 +22,14 @@ const OUTPUT_PATH = path.join(ROOT, "public/bible-data/strongs/lexicon.ko.json")
 const ENV_PATH = path.join(ROOT, ".env.local");
 
 function loadApiKey() {
+  // CI (GitHub Actions) injects this directly as a real env var, from a repo secret.
+  if (process.env.GEMINI_API_KEY) return process.env.GEMINI_API_KEY.trim();
+
+  // Local dev: read straight from .env.local instead of requiring dotenv as a dependency.
   const envContent = fs.readFileSync(ENV_PATH, "utf8");
   const match = envContent.match(/^GEMINI_API_KEY=(.*)$/m);
   const key = (match ? match[1] : "").trim();
-  if (!key) throw new Error("GEMINI_API_KEY not set in .env.local");
+  if (!key) throw new Error("GEMINI_API_KEY not set (checked env var and .env.local)");
   return key;
 }
 
