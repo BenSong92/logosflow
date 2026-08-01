@@ -42,6 +42,11 @@ const MODEL = "gemini-3.6-flash";
 const BATCH_SIZE = 300;
 const MAX_RETRIES = 4;
 const DELAY_BETWEEN_BATCHES_MS = 3000;
+// Stop translating (and let the caller commit whatever's done) with enough buffer
+// before the CI job's own timeout-minutes kills the whole process mid-batch —
+// which would silently drop everything translated that run, since the "commit and
+// push" step never gets to run after a hard job timeout/cancellation.
+const MAX_RUNTIME_MS = 10 * 60 * 1000;
 
 const SYSTEM_INSTRUCTION = `당신은 성경 원어(히브리어/헬라어) 사전 편찬자입니다.
 스트롱 사전(Strong's Exhaustive Concordance)의 영어 정의를 한국 성경 독자를 위한
@@ -151,8 +156,13 @@ async function main() {
   }
 
   let stoppedOnQuota = false;
+  const startedAt = Date.now();
 
   for (let i = 0; i < batches.length; i++) {
+    if (Date.now() - startedAt > MAX_RUNTIME_MS) {
+      console.log(`시간 예산(${MAX_RUNTIME_MS / 60000}분)을 다 써서 여기서 멈춰요. 내일 이어서 진행돼요.`);
+      break;
+    }
     try {
       const entries = await translateBatch(client, batches[i]);
       for (const e of entries) {
