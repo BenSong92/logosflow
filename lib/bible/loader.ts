@@ -170,29 +170,40 @@ export async function fetchLexiconEntry(strongNumber: string): Promise<LexiconEn
   return lexicon[strongNumber] ?? null;
 }
 
-/** chapters[chapterIndex][verseIndex] = word/phrase spans tagged with Strong's numbers. Only KJV has this data. */
+/** chapters[chapterIndex][verseIndex] = word/phrase spans tagged with Strong's numbers. */
 type WordLinksBook = WordLinkSpan[][][];
 
 const wordLinksCache = new Map<string, Promise<WordLinksBook>>();
 
-function fetchWordLinksBook(bookId: string): Promise<WordLinksBook> {
-  let promise = wordLinksCache.get(bookId);
+function fetchWordLinksBook(bookId: string, filePrefix: string): Promise<WordLinksBook> {
+  const key = `${filePrefix}:${bookId}`;
+  let promise = wordLinksCache.get(key);
   if (!promise) {
-    promise = fetch(`/bible-data/strongs/kjv-links-${bookId}.json`)
+    promise = fetch(`/bible-data/strongs/${filePrefix}-${bookId}.json`)
       .then((res) => {
-        if (!res.ok) throw new Error(`No word links for ${bookId}`);
+        if (!res.ok) throw new Error(`No word links for ${key}`);
         return res.json() as Promise<WordLinksBook>;
       })
       .catch((err) => {
-        wordLinksCache.delete(bookId);
+        wordLinksCache.delete(key);
         throw err;
       });
-    wordLinksCache.set(bookId, promise);
+    wordLinksCache.set(key, promise);
   }
   return promise;
 }
 
-const WORD_LINK_TRANSLATION: TranslationCode = "KJV";
+/**
+ * Which translations have word-level Strong's tagging, and the file prefix
+ * their per-book files use. KJV is tagged directly; KRV is tagged via
+ * scripts/translate-krv-links.mjs, which maps each KJV tag onto the matching
+ * substring of the Korean text (rolls out book-by-book as that job progresses
+ * — a 404 for an untranslated book falls through to the catch below).
+ */
+const WORD_LINK_FILE_PREFIX: Partial<Record<TranslationCode, string>> = {
+  KJV: "kjv-links",
+  KRV: "krv-links",
+};
 
 export async function fetchWordLinks(
   bookId: string,
@@ -200,9 +211,10 @@ export async function fetchWordLinks(
   verse: number,
   translationCode: TranslationCode
 ): Promise<WordLinkSpan[]> {
-  if (translationCode !== WORD_LINK_TRANSLATION) return [];
+  const filePrefix = WORD_LINK_FILE_PREFIX[translationCode];
+  if (!filePrefix) return [];
   try {
-    const chapters = await fetchWordLinksBook(bookId);
+    const chapters = await fetchWordLinksBook(bookId, filePrefix);
     return chapters[chapter - 1]?.[verse - 1] ?? [];
   } catch {
     return [];

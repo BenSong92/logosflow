@@ -1,0 +1,43 @@
+name: Link KRV words to Strong's numbers
+
+on:
+  schedule:
+    # 07:20 UTC — 5 minutes after the lexicon workflow's slot, same daily
+    # Gemini free-tier quota reset window.
+    - cron: "20 7 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Link today's quota worth of KRV verses
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node scripts/translate-krv-links.mjs
+
+      - name: Commit and push if there are changes
+        run: |
+          git add public/bible-data/strongs/krv-links-*.json
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "Link more KRV verses to Strong's numbers (auto)"
+            git push
+          else
+            echo "No new links today."
+          fi
