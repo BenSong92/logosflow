@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Search, Sparkles } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Loader2, Search, Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { BIBLE_BOOKS, BOOKS_BY_ID } from "@/lib/data/books";
 import { semanticSearch } from "@/lib/data/ai-mock";
+import { fetchConceptSearch } from "@/lib/ai/client";
 import { useReaderStore } from "@/lib/store/reader-store";
 import type { SearchResult } from "@/types/bible";
 
@@ -71,6 +73,14 @@ export function CommandPalette() {
     queryFn: () => semanticSearch(debouncedQuery),
     enabled: debouncedQuery.trim().length >= 4 && textResults.length === 0 && !textSearch.isFetching,
   });
+
+  // Real AI concept search is explicitly triggered (button click), never fired
+  // on every keystroke like the free local demo above — each call spends real
+  // Gemini quota, which is scarce, so it shouldn't run unattended.
+  const conceptSearch = useMutation({
+    mutationFn: (q: string) => fetchConceptSearch(q),
+  });
+  const conceptResult = conceptSearch.data;
 
   const go = (bookId: string, chapter: number, verse?: number) => {
     navigateTo(bookId, chapter);
@@ -169,6 +179,52 @@ export function CommandPalette() {
                     <span className="mt-0.5 line-clamp-1 text-sm text-ink">{v.text}</span>
                   </button>
                 ))}
+
+                <div className="mt-2 flex items-center justify-between px-3">
+                  <p className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
+                    <Sparkles className="h-3 w-3 text-accent" />
+                    AI 추천 구절
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => conceptSearch.mutate(debouncedQuery)}
+                    disabled={conceptSearch.isPending}
+                  >
+                    {conceptSearch.isPending && <Loader2 className="h-3 w-3 animate-spin" />}
+                    AI로 찾기
+                  </Button>
+                </div>
+
+                {conceptResult?.status === "not_configured" && (
+                  <p className="px-3 py-2 text-xs text-ink-muted">
+                    AI 검색을 쓰려면 Gemini API 키 설정이 필요해요.
+                  </p>
+                )}
+                {conceptResult?.status === "error" && (
+                  <p className="px-3 py-2 text-xs text-red-500">
+                    지금은 AI 검색을 쓸 수 없어요. 잠시 후 다시 시도해주세요.
+                  </p>
+                )}
+                {conceptResult?.status === "ok" && conceptResult.data.results.length === 0 && (
+                  <p className="px-3 py-2 text-xs text-ink-muted">
+                    이 주제와 관련된 구절을 찾지 못했어요. 다른 표현으로 시도해보세요.
+                  </p>
+                )}
+                {conceptResult?.status === "ok" &&
+                  conceptResult.data.results.map((r, i) => (
+                    <button
+                      key={i}
+                      onClick={() => go(r.bookId, r.chapter, r.verse)}
+                      className="flex w-full flex-col items-start rounded-md px-3 py-2 text-left hover:bg-paper-raised"
+                    >
+                      <span className="text-xs font-medium text-ink-muted">
+                        {BOOKS_BY_ID[r.bookId]?.nameKo} {r.chapter}:{r.verse}
+                      </span>
+                      <span className="mt-0.5 line-clamp-1 text-sm text-ink">{r.text}</span>
+                      <span className="mt-0.5 text-[11px] text-accent">→ {r.reason}</span>
+                    </button>
+                  ))}
               </div>
             )}
 

@@ -3,9 +3,9 @@ export type AIFetchResult<T> =
   | { status: "not_configured" }
   | { status: "error" };
 
-async function postAI<T>(
+async function postAI<T, TBody = { bookId: string; chapter: number; verse: number }>(
   url: string,
-  body: { bookId: string; chapter: number; verse: number }
+  body: TBody
 ): Promise<AIFetchResult<T>> {
   try {
     const res = await fetch(url, {
@@ -37,4 +37,18 @@ export function fetchRealSermon(bookId: string, chapter: number, verse: number) 
     keyTakeaways: string[];
     discussionQuestions: string[];
   }>("/api/ai/sermon", { bookId, chapter, verse });
+}
+
+export interface ConceptSearchHit {
+  bookId: string;
+  chapter: number;
+  verse: number;
+  reason: string;
+  text: string;
+}
+
+export function fetchConceptSearch(query: string) {
+  return postAI<{ results: ConceptSearchHit[] }, { query: string }>("/api/ai/concept-search", {
+    query,
+  });
 }

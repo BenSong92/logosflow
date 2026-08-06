@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BIBLE_BOOKS } from "@/lib/data/books";
 
 export const insightSchema = z.object({
   contextSummary: z.string().describe("2-3문장, 이 구절의 핵심 맥락 요약 (한국어)"),
@@ -18,6 +19,39 @@ export const sermonSchema = z.object({
     .array(z.string())
     .describe("소그룹 나눔 질문 2-3개, 학생이 자기 삶에 적용할 수 있는 질문 (한국어)"),
 });
+
+export const conceptSearchSchema = z.object({
+  results: z
+    .array(
+      z.object({
+        bookId: z.string().describe("성경 책 영문 코드, 예: GEN, JHN, PSA, 1CO"),
+        chapter: z.number().int(),
+        verse: z.number().int(),
+        reason: z.string().describe("이 구절이 검색어와 관련된 이유, 1문장, 한국어"),
+      })
+    )
+    .max(8),
+});
+
+const BOOK_ID_LIST = BIBLE_BOOKS.map((b) => `${b.id}=${b.nameKo}`).join(", ");
+
+export function buildConceptSearchSystemPrompt() {
+  return `당신은 한국 교회 성도를 돕는 성경 구절 추천 시스템입니다. 사용자가 입력한 주제·감정·상황에
+실제로 관련 있는 성경 구절을 찾아 추천합니다.
+
+원칙:
+- 반드시 실존하는 성경 구절만 추천하세요. 구절을 지어내거나 장·절 번호를 추측하지 마세요.
+- bookId는 반드시 다음 66개 코드 중 하나를 정확히 그대로 쓰세요: ${BOOK_ID_LIST}
+- 검색어와 억지로 끼워 맞추지 말고, 정말 관련 있는 구절만 (많아야 8개, 적어도 괜찮음) 추천하세요.
+- 각 구절마다 왜 이 검색어와 관련 있는지 한국어로 1문장 설명을 붙이세요.
+- 모든 응답은 한국어로 작성하세요.`;
+}
+
+export function buildConceptSearchPrompt(query: string) {
+  return `다음 주제/감정/상황과 관련된 성경 구절을 찾아주세요.
+
+검색어: "${query}"`;
+}
 
 export function buildSystemPrompt() {
   return `당신은 한국 교회의 성경 연구를 돕는 신학 조교입니다. 중고등학생부터 성인까지 폭넓은 사용자를 위해 성경 구절의 배경과 의미를 설명합니다.
