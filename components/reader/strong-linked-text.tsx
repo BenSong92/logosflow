@@ -23,7 +23,12 @@ function LexiconCard({ strongNumber }: { strongNumber: string }) {
         </div>
         <Badge variant="outline">{entry.strongNumber}</Badge>
       </div>
-      <p className="mt-2 text-sm leading-relaxed text-ink">{entry.definition}</p>
+      <p className="mt-2 text-sm leading-relaxed text-ink">{entry.definitionKo ?? entry.definition}</p>
+      {!entry.definitionKo && (
+        <p className="mt-1 text-[10px] text-ink-muted">
+          아직 한글 번역이 준비되지 않아 영어 원문(스트롱 사전)을 보여드려요.
+        </p>
+      )}
       {entry.usageCount && (
         <p className="mt-2 text-[11px] text-ink-muted">
           KJV 전체 {entry.usageCount}회 사용 · {entry.language === "hebrew" ? "히브리어" : "헬라어"}
