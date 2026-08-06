@@ -13,6 +13,12 @@ import type { Translation } from "@/types/bible";
  *   shows them as selectable-but-locked so the UI/data shape is ready the
  *   moment a license is signed. See the app's Bible-text-licensing note
  *   for how to pursue that.
+ * - 바른성경 (BRB, 한국성경공회): a secondhand source (not 한국성경공회's own
+ *   copyright page, which was unreachable 2026-08-06 — broken TLS cert on
+ *   ksbible.or.kr) claims their policy is no royalty for online/app use,
+ *   unlike NKRV/KLB above. Unconfirmed — still locked until 한국성경공회
+ *   confirms directly and provides the actual text data (a free royalty
+ *   doesn't mean the text can just be scraped without permission).
  */
 export const TRANSLATIONS: Translation[] = [
   {
@@ -40,6 +46,15 @@ export const TRANSLATIONS: Translation[] = [
     language: "ko",
     licenseStatus: "pending-license",
     licenseNote: "생명의말씀사 소유 — 아직 사용허가를 받지 못했어요. 라이선스 확보 후 본문이 채워집니다.",
+  },
+  {
+    code: "BRB",
+    nameKo: "바른성경",
+    nameEn: "Bareun Bible (1998)",
+    language: "ko",
+    licenseStatus: "pending-license",
+    licenseNote:
+      "한국성경공회 소유 — 앱/온라인 무료 사용 정책이라는 얘기가 있으나 공식 확인 전. 확인 및 본문 데이터 확보 후 채워집니다.",
   },
   {
     code: "WEB",

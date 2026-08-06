@@ -24,7 +24,7 @@ export interface BibleBook {
   category: BookCategory;
 }
 
-export type TranslationCode = "WEB" | "KJV" | "KRV" | "NKRV" | "KLB";
+export type TranslationCode = "WEB" | "KJV" | "KRV" | "NKRV" | "KLB" | "BRB";
 
 /**
  * - public-domain: no restrictions (WEB, KJV)
