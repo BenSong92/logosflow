@@ -37,7 +37,8 @@ export const TRANSLATIONS: Translation[] = [
     nameEn: "New Korean Revised Version (1998)",
     language: "ko",
     licenseStatus: "pending-license",
-    licenseNote: "대한성서공회 소유 — 아직 사용허가를 받지 못했어요. 라이선스 확보 후 본문이 채워집니다.",
+    licenseNote:
+      "대한성서공회 소유 — 아직 사용허가를 받지 못했어요. 대한성서공회 안내상 앱은 기본저작권료 100만원+다운로드 수 기준, 웹서비스는 판매정가의 3~7%(비영리/개인 할인 명시 없음, 2026-08-06 확인). 라이선스 확보 후 본문이 채워집니다.",
   },
   {
     code: "KLB",
