@@ -37,6 +37,10 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git commit -m "Link more KRV verses to Strong's numbers (auto)"
+            # The remote may have moved since checkout (another push, a manual
+            # test run) — rebase the one commit we made on top before pushing,
+            # so a stale base doesn't throw away a whole run's worth of API calls.
+            git pull --rebase origin master
             git push
           else
             echo "No new links today."

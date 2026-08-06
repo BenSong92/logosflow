@@ -37,6 +37,7 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add public/bible-data/strongs/lexicon.ko.json
             git commit -m "Translate more Strongs lexicon entries to Korean (auto)"
+            git pull --rebase origin master
             git push
           else
             echo "No new translations today."
