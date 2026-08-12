@@ -104,9 +104,11 @@ export interface AIInsight {
 }
 
 export interface YouthSermonSketch {
+  icebreaker: string;
   visualMetaphor: string;
   keyTakeaways: string[];
-  discussionQuestions: string[];
+  applicationQuestions: string[];
+  prayerPoint: string;
   isDemo: boolean;
 }
 

@@ -79,6 +79,7 @@ const AI_INSIGHTS: Record<string, AIInsight> = {
 
 const YOUTH_SERMONS: Record<string, YouthSermonSketch> = {
   [verseKey("PSA", 23, 1)]: {
+    icebreaker: "요즘 나를 가장 안심시켜주는 사람이나 존재는 누구인가요? (사람이 아니어도 좋아요)",
     visualMetaphor:
       "GPS 없이도 길을 아는 '내비게이션 친구'처럼, 목자는 양이 보지 못하는 위험까지 미리 알고 이끄는 존재예요.",
     keyTakeaways: [
@@ -86,14 +87,16 @@ const YOUTH_SERMONS: Record<string, YouthSermonSketch> = {
       "어두운 골짜기를 지날 때도 '혼자'가 아니라는 게 핵심이에요.",
       "목자를 따라가는 양처럼, 오늘 내가 따라가는 '목소리'는 무엇인지 점검해봐요.",
     ],
-    discussionQuestions: [
+    applicationQuestions: [
       "요즘 내 삶에서 가장 어두운 골짜기처럼 느껴지는 순간은 언제인가요?",
       "나는 평소에 어떤 '목소리'(친구, 유튜브, 부모님, 하나님...)를 가장 많이 따라가나요?",
       "이 시를 오늘 나의 언어로 한 문장으로 바꿔본다면?",
     ],
+    prayerPoint: "이번 주 내가 가장 크게 느끼는 '부족함'을 하나님께 솔직히 내어놓는 기도로 마무리해요.",
     isDemo: true,
   },
   [verseKey("JHN", 3, 16)]: {
+    icebreaker: "내가 가진 것 중 가장 아끼는 걸 누군가에게 조건 없이 준다면, 뭘 줄 수 있을 것 같나요?",
     visualMetaphor:
       "가장 아끼는 걸 조건 없이 내어주는 것 — 용돈을 모아 산 물건을 친구에게 그냥 주는 것과 비슷하지만, 하나님은 '아들'을 내어주셨어요.",
     keyTakeaways: [
@@ -101,10 +104,11 @@ const YOUTH_SERMONS: Record<string, YouthSermonSketch> = {
       "사랑의 대상은 '착한 사람들'이 아니라 '세상 전체'예요.",
       "믿음의 결과는 두려운 심판이 아니라 영생이라는 선물이에요.",
     ],
-    discussionQuestions: [
+    applicationQuestions: [
       "누군가를 조건 없이 사랑해본 적이 있나요? 그때 기분이 어땠나요?",
       "'세상을 이처럼 사랑하사'를 나를 향한 말로 바꿔 읽어본다면?",
     ],
+    prayerPoint: "오늘 하루, 조건 없이 사랑을 흘려보낼 수 있는 한 사람을 떠올리며 기도해요.",
     isDemo: true,
   },
 };

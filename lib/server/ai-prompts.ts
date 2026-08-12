@@ -9,15 +9,23 @@ export const insightSchema = z.object({
 });
 
 export const sermonSchema = z.object({
+  icebreaker: z
+    .string()
+    .describe(
+      "모임 도입부에 던질 아이스브레이커 질문 1개. 본문과 느슨하게 연결되지만 부담 없이 아무나 대답할 수 있는 가벼운 질문 (한국어)"
+    ),
   visualMetaphor: z
     .string()
     .describe("중고등학생이 이해할 만한 일상적 비유 1-2문장 (한국어)"),
   keyTakeaways: z
     .array(z.string())
     .describe("핵심 메시지 정확히 3개 (한국어, 각 항목 1문장)"),
-  discussionQuestions: z
+  applicationQuestions: z
     .array(z.string())
-    .describe("소그룹 나눔 질문 2-3개, 학생이 자기 삶에 적용할 수 있는 질문 (한국어)"),
+    .describe("소그룹 나눔 질문 2-3개, 학생이 오늘 배운 걸 자기 삶에 구체적으로 적용할 수 있는 질문 (한국어)"),
+  prayerPoint: z
+    .string()
+    .describe("모임을 마무리하며 함께 나눌 기도 제목 1문장. 오늘 메시지와 자연스럽게 이어지도록 (한국어)"),
 });
 
 export const conceptSearchSchema = z.object({
@@ -140,5 +148,12 @@ export function buildSermonPrompt(params: {
 한글 본문(개역한글): ${textKo ?? "(본문 없음)"}
 영어 본문(WEB): ${textEn ?? "(본문 없음)"}
 
-청소년이 스마트폰, 친구 관계, 학업 스트레스 같은 자기 삶의 언어로 이해할 수 있는 시각적 비유를 만들고, 핵심 메시지 정확히 3가지, 소그룹에서 나눌 수 있는 질문을 만들어주세요. 설교체가 아니라 또래에게 말하듯 친근하게 써주세요.`;
+그대로 진행할 수 있는 소그룹 순서로 만들어주세요:
+1. 도입 아이스브레이커 질문 (가볍게 시작)
+2. 청소년이 스마트폰, 친구 관계, 학업 스트레스 같은 자기 삶의 언어로 이해할 수 있는 시각적 비유
+3. 핵심 메시지 정확히 3가지
+4. 오늘 배운 걸 삶에 적용할 수 있는 나눔 질문
+5. 오늘 메시지와 이어지는 마무리 기도 제목
+
+설교체가 아니라 또래에게 말하듯 친근하게 써주세요.`;
 }

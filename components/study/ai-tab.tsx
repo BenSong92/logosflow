@@ -144,11 +144,15 @@ export function AITab({
         {sermon.data && (
           <div className="mt-3 space-y-3 text-sm text-ink">
             <div>
-              <p className="mb-1 text-xs font-semibold text-ink-muted">비주얼 메타포</p>
+              <p className="mb-1 text-xs font-semibold text-ink-muted">1. 도입 아이스브레이커</p>
+              <p className="leading-relaxed">{sermon.data.icebreaker}</p>
+            </div>
+            <div>
+              <p className="mb-1 text-xs font-semibold text-ink-muted">2. 비주얼 메타포</p>
               <p className="leading-relaxed">{sermon.data.visualMetaphor}</p>
             </div>
             <div>
-              <p className="mb-1 text-xs font-semibold text-ink-muted">핵심 3가지</p>
+              <p className="mb-1 text-xs font-semibold text-ink-muted">3. 핵심 메시지 3가지</p>
               <ul className="list-disc space-y-1 pl-4">
                 {sermon.data.keyTakeaways.map((p, i) => (
                   <li key={i}>{p}</li>
@@ -156,12 +160,16 @@ export function AITab({
               </ul>
             </div>
             <div>
-              <p className="mb-1 text-xs font-semibold text-ink-muted">소그룹 나눔 질문</p>
+              <p className="mb-1 text-xs font-semibold text-ink-muted">4. 삶 적용 질문</p>
               <ul className="list-disc space-y-1 pl-4">
-                {sermon.data.discussionQuestions.map((q, i) => (
+                {sermon.data.applicationQuestions.map((q, i) => (
                   <li key={i}>{q}</li>
                 ))}
               </ul>
+            </div>
+            <div>
+              <p className="mb-1 text-xs font-semibold text-ink-muted">5. 마무리 기도 제목</p>
+              <p className="leading-relaxed">{sermon.data.prayerPoint}</p>
             </div>
           </div>
         )}

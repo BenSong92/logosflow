@@ -33,9 +33,11 @@ export function fetchRealInsight(bookId: string, chapter: number, verse: number)
 
 export function fetchRealSermon(bookId: string, chapter: number, verse: number) {
   return postAI<{
+    icebreaker: string;
     visualMetaphor: string;
     keyTakeaways: string[];
-    discussionQuestions: string[];
+    applicationQuestions: string[];
+    prayerPoint: string;
   }>("/api/ai/sermon", { bookId, chapter, verse });
 }
 
