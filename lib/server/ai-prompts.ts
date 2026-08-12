@@ -53,6 +53,52 @@ export function buildConceptSearchPrompt(query: string) {
 검색어: "${query}"`;
 }
 
+export const xrefInsightSchema = z.object({
+  reasons: z
+    .array(
+      z.object({
+        index: z.number().int().describe("입력으로 받은 관주 목록의 순번(0부터 시작)"),
+        reason: z.string().describe("두 구절이 어떻게 연결되는지, 1문장, 한국어"),
+      })
+    )
+    .describe("입력받은 모든 관주 각각에 대해 하나씩"),
+});
+
+export function buildXrefInsightSystemPrompt() {
+  return `당신은 한국 교회 성도를 돕는 성경 관주(cross-reference) 해설자입니다. 기준 구절과
+그 구절의 관주로 연결된 다른 구절들이 주어지면, 두 구절이 왜/어떻게 연결되는지 짧게
+설명합니다.
+
+원칙:
+- 이미 주어진 구절들만 다룹니다. 새로운 구절을 추천하거나 지어내지 마세요.
+- 연결 방식은 다양할 수 있습니다: 같은 사건/인물, 예언과 성취, 직접 인용, 같은 주제나
+  가르침의 반복, 대조되는 표현 등. 실제로 해당하는 방식대로 자연스럽게 설명하세요.
+- 억지로 의미를 부여하지 말고, 정말 그 연결이 안 보이면 "본문상의 명확한 연결점은
+  뚜렷하지 않으나" 처럼 솔직하게 쓰세요.
+- 반드시 입력받은 모든 항목에 대해 순번(index)별로 하나씩 응답하세요.
+- 모든 응답은 한국어 1문장으로, 존댓말을 쓰되 자연스럽게 작성하세요.`;
+}
+
+export function buildXrefInsightPrompt(params: {
+  bookNameKo: string;
+  chapter: number;
+  verse: number;
+  textKo: string | null;
+  xrefs: { index: number; label: string; textKo: string | null }[];
+}) {
+  const { bookNameKo, chapter, verse, textKo, xrefs } = params;
+  const lines = xrefs.map(
+    (x) => `[${x.index}] ${x.label} — ${x.textKo ?? "(본문 없음)"}`
+  );
+  return `기준 구절: ${bookNameKo} ${chapter}:${verse}
+본문: ${textKo ?? "(본문 없음)"}
+
+이 구절과 연결된 관주들:
+${lines.join("\n")}
+
+각 관주가 기준 구절과 왜/어떻게 연결되는지 순번별로 설명해주세요.`;
+}
+
 export function buildSystemPrompt() {
   return `당신은 한국 교회의 성경 연구를 돕는 신학 조교입니다. 중고등학생부터 성인까지 폭넓은 사용자를 위해 성경 구절의 배경과 의미를 설명합니다.
 

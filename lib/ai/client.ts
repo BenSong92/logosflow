@@ -52,3 +52,16 @@ export function fetchConceptSearch(query: string) {
     query,
   });
 }
+
+export interface XrefRef {
+  bookId: string;
+  chapter: number;
+  verse: number;
+}
+
+export function fetchXrefInsight(source: XrefRef, xrefs: XrefRef[]) {
+  return postAI<
+    { reasons: { index: number; reason: string }[] },
+    { bookId: string; chapter: number; verse: number; xrefs: XrefRef[] }
+  >("/api/ai/xref-insight", { ...source, xrefs });
+}
