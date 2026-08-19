@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.logosflow.app",
+      "sha256_cert_fingerprints": [
+        "50:F8:C5:45:2E:18:10:D0:BE:29:B2:FB:69:54:F8:E1:C7:81:DA:0C:F2:7F:45:CC:8F:87:A2:04:65:EC:AC:6D"
+      ]
+    }
+  }
+]
